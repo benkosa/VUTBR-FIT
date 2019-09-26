@@ -1,0 +1,330 @@
+#! /bin/bash
+#autor: BENJAMIN KOSA
+#login: XKOSAB00
+#project: Projekt1 - wedi
+#datum: 2018.03.17
+
+#export WEDI_RC="/home/benji/Desktop/proj1/data.sh"
+#export EDITOR="vi"
+
+RemoveUselessFiles(){
+    j=0
+    while ifs= read -r line; do
+        i=0
+        for word in $line; do
+            words[i]=$word
+            i=`expr $i + 1`
+        done
+        j=`expr $j + 1`
+        if [ -e ${words[1]} ]; then
+            a=0
+        else
+            sed -i $j'd' $WEDI_RC
+            j=`expr $j - 1`
+        fi
+    done <$WEDI_RC
+}
+
+#pocita rovnake cesty v subore, vrati pocet zhod
+ReturnFindSameFiles=1
+FindSameFiles(){
+    ReturnFindSameFiles=1
+    while ifs=' ' read -r line; do
+        for word in $line; do
+            if [ $word == $1 ]; then
+                ReturnFindSameFiles=`expr $ReturnFindSameFiles + 1`
+            fi 
+        done
+    done <$WEDI_RC
+}
+
+#zaise na zaciatok suboru
+WriteToFile(){  #1 = filepath
+    DATE=`date +%Y-%m-%d`
+
+    FILEPATH=$(realpath ${1%/*})
+    
+    FindSameFiles $FILEPATH
+
+    echo "$DATE $FILEPATH $ReturnFindSameFiles" | cat - $WEDI_RC > temp && mv temp $WEDI_RC
+}
+
+#porovna datumi
+ReturnCompareDate="="
+CompareDate(){
+    ReturnCompareDate="=="
+    date1=$(date -d $1 +%s)
+    date2=$(date -d $2 +%s)
+
+    if [ $date1 -gt $date2 ];then
+        ReturnCompareDate="-a"
+    elif [ $date1 -lt $date2 ];then
+        ReturnCompareDate="-b"
+    fi
+}
+
+ReadFile(){ #"-b" "2018-03-23" "/home/benji/Desktop/"
+    while ifs=' ' read -r line; do
+        i=0
+        count=0
+        for word in $line; do
+            words[i]=$word
+            i=`expr $i + 1`
+        done
+
+        #zisti ci je datume mensi/vacsi
+        CompareDate ${words[0]} $2
+        #ak je taky ako sa pozaduje tak sa vypise
+        if [ $ReturnCompareDate == $1 ]; then
+            #cesta v subore        
+            path=${words[1]%/*}
+            #ak sa rovna s cestou v argumente
+            if [ $path == $3 ];then
+                #porovn s cestami ktore su uz nacitane, pocita zhody
+                for element in ${fileList[@]}; do
+                    if [ $element == ${words[1]} ]; then
+                        count=`expr $count + 1`
+                    fi
+                done
+                #ked nenajde zhodu tak zapise fo fileList
+                if [ $count == 0 ]; then
+                    id=${#fileList[@]}
+                    fileList[id]=${words[1]}
+                fi
+            fi
+        fi 
+    done <$WEDI_RC
+    if [ ${#fileList[@]} == 0 ]; then
+        echo "wedi: No files in this directory"
+        exit 1
+    fi
+    for element in ${fileList[@]}; do
+        echo $element
+    done
+    exit 0
+}
+
+ShowFileList(){ #1 = directory
+    id=0
+    while ifs=' ' read -r line; do
+        count=0
+        i=0
+        for word in $line; do
+            words[i]=$word
+            i=`expr $i + 1`
+        done
+        path=${words[1]%/*}
+        
+        if [ $path == $1 ]; then
+            for element in ${fileList[@]}; do
+                if [ ${words[1]} == $element ]; then
+                    count=`expr $count + 1`
+                fi
+            done
+            if [ $count == 0 ]; then
+                id=${#fileList[@]}
+                fileList[id]=${words[1]}
+            fi
+        fi
+    done <$WEDI_RC
+
+    if [ ${#fileList[@]} == 0 ]; then
+        echo "wedi: No files in this directory"
+        exit 1
+    fi
+    for element in ${fileList[@]}; do
+        echo $element
+    done    
+    exit 0
+}
+
+#Vytvori cestu v pc
+CreatePath() { # 1  cesta
+    if [ $# -lt 1 ]; then
+        echo >&2 "wedi: Missing argument";
+        exit 1
+    fi
+    for f in "$@"; do
+        mkdir -p -- "$(dirname -- "$1")"
+        touch -- "$1"
+    done
+}
+
+#Otvori subor vo zvolenom programe
+OpenFile(){ #1 = path, 2 = file
+    ${editorToUse} "$1$2" 2>/dev/null
+    retValue="$?"
+    WriteToFile "$1/$2"
+    if [ $retValue -ne 0 ]; then
+        echo >&2 "wedi: Error when opening file"
+        exit 1
+    fi
+
+    exit $((retValue))
+}
+
+FindDirectory(){ #1 = directory
+    i=0
+    while ifs=' ' read -r line; do        
+        for word in $line; do
+            words[i]=$word
+            i=`expr $i + 1`
+        done
+
+        if [ ${words[1]:0:${#1}} == $1 ]; then
+            OpenFile ${words[1]}
+            exit 0
+        fi
+    done <$WEDI_RC
+    if [ $i == 0 ]; then
+        echo >&2 "wedi: Error no files in this directory"
+        exit 1
+    fi
+}
+
+FindMostFrequentlyTriggeredFile(){ #1 = directory
+    max=0
+    directory=""
+    while ifs=' ' read -r line; do
+        i=0
+        for word in $line; do
+            words[i]=$word
+            i=`expr $i + 1`
+        done
+
+        path=${words[1]%/*}
+        if [ $path == $1 ]; then
+            if [ $max -lt ${words[2]} ]; then
+                max=${words[2]}
+                directory=${words[1]}
+            fi
+        fi
+    done <$WEDI_RC
+
+    if [ $max == 0 ]; then
+        echo "wedi: Error cannot find match in directory"
+        exit 1
+    else
+        OpenFile $directory
+    fi
+}
+
+
+#***************************************#       
+#   VISUAL  WEDI_RC  EDITOR  SETINGS    #
+#***************************************#
+
+if [ $WEDI_RC ]; then
+    CreatePath $WEDI_RC
+else
+    echo >&2 "wedi[E.01]: WEDI_RC not specified!"
+    exit 1
+fi
+
+RemoveUselessFiles
+
+if [ "$EDITOR" ]; then
+    editorToUse="$EDITOR"
+elif [ "$VISUAL" ]; then
+    editorToUse="$VISUAL"
+else
+    editorToUse="vim"
+fi
+
+
+#***************************************#       
+#               Arguments               #
+#***************************************#
+
+#check number of arguments
+if [ $# -gt 3 ]; then
+    echo >&2 "wedi[E.03]: Too many arguments!" 
+    exit 1
+fi
+
+#check if there are no arguments
+if [ $# == 0 ]; then    
+    FindDirectory $PWD                       
+    exit 0
+fi
+
+#check if first argumen is a direcotry
+if [ -d $1 ]; then
+    FindDirectory $1                      
+    exit 0
+fi
+
+#check if first argument is a file
+if [ -e $1 ]; then
+    OpenFile $1                        
+    exit 0
+fi
+
+#check if is -a argument
+case $1 in
+	-m) #in case taht found -m      
+        if [ $# == 2 ]; then
+            #check if second argumen is a direcotry
+            if [ -d $2 ]; then
+                path=$2
+                if [ ${2: -1} == "/" ];then
+                    path=${2%/*}    
+                fi
+                FindMostFrequentlyTriggeredFile $path                       
+            else
+                echo >&2 "wedi[E.04]: Wrong input!"
+                exit 1
+            fi                        
+        exit 0
+        fi
+        FindMostFrequentlyTriggeredFile $PWD
+		;;
+
+	-l) #in case taht found -l
+        if [ $# == 2 ]; then
+            #check if second argumen is a direcotry
+            if [ -d $2 ]; then
+                path=$2
+                if [ ${2: -1} == "/" ];then
+                    path=${2%/*}    
+                fi
+                ShowFileList $path
+            else
+                echo >&2 "wedi[E.05]: Wrong input!"
+                exit 1
+            fi
+        fi
+        ShowFileList $PWD
+		;;
+
+    -b|-a) #in case taht found -b / -a
+	    dateMatch=$(echo "$2" | egrep "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+            if  [ -z "$dateMatch" ]; then
+                echo >&2 "wedi[E.06]: Wrong date format!"
+                exit 1
+            else
+                if [ $3 ]; then
+                    #check if third argumen is a direcotry
+                    if [ -d $3 ]; then
+                        path=$3
+                        if [ ${3: -1} == "/" ];then
+                            path=${3%/*}    
+                        fi
+                        ReadFile $1 $2 $path
+                        
+                    else
+                        echo >&2 "wedi[E.07]: Wrong input!"
+                        exit 1
+                    fi
+                else
+                    ReadFile $1 $2 $PWD
+                        
+                fi
+            fi
+		;;
+	*)  #in case taht found no match
+		echo >&2 "wedi[E.08]: Wrong input!"
+        exit 1
+		;;
+esac
+exit 0
