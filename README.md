@@ -51,3 +51,4 @@
 			* [proj1](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPK/proj1) 9/10
 		* [IPP](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPP)
 			* [proj1](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPP/proj1) 9/10
+* **[3BIT]** - X
