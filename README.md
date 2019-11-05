@@ -41,13 +41,13 @@
 	* **[summer](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto)**
 		* [IDS](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IDS)
 			* [proj2](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IDS/proj2) 34/34
-      * [proj3](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IDS/proj3) 34/34
-      * [proj4](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IDS/proj4) 34/34
+        	* [proj3](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IDS/proj3) 34/34
+        	* [proj4](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IDS/proj4) 34/34
 		* [IJA](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IJA)
 			* [proj1](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IJA/uloha2/ija/ija2018/homework2) 2/2
-		  * [proj2](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IJA/uloha1/ija/ija2018/homework1/board) 2/2
-      * [proj3] 80/90
-    * [IPK](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPK)
+		  	* [proj2](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IJA/uloha1/ija/ija2018/homework1/board) 2/2
+      		* [proj3] 80/90
+    	* [IPK](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPK)
 			* [proj1](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPK/proj1) 9/10
 		* [IPP](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPP)
 			* [proj1](https://github.com/benkosa/VUTBR-FIT/tree/master/2.rocnik/2018-2019_Leto/IPP/proj1) 9/10
